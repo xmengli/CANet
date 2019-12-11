@@ -1,0 +1,2 @@
+cd ..
+CUDA_VISIBLE_DEVICES='0,2' python baseline.py /home/xmli/datasets/MESSIDOR/ missidor MESSIDOR/messidor_val_lr -a densenet161 --gpu 0 -b 40 --lr 0.001 --pretrained --epochs 3000000  --decay_epoch 100 --num_class 2  --multitask  --invalid

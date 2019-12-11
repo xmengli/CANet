@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="9fac3865-5bdd-4af4-95cf-6a5aaf6a04c0" name="hpc4.cse.cuhk.edu.hk" url="http://hpc4.cse.cuhk.edu.hk">
+        <fileTransfer host="hpc4.cse.cuhk.edu.hk" port="22" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
