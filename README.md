@@ -21,7 +21,7 @@ cd CANet
 ```
 
 ## Data Preparation
-* Download [Messidor dataset] (http://www.adcis.net/en/third-party/messidor/) <br/>. 
+* Download [Messidor dataset](http://www.adcis.net/en/third-party/messidor/) <br/>. 
 * 
 
 
