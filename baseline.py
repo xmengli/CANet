@@ -226,7 +226,7 @@ def main_worker(gpu, args):
     #     normalize
     # ])
 
-    # # print (args.model_dir)
+    # IDRiD dataset
     # tra = transforms.Compose([
     #     transforms.Resize(350),
     #     transforms.RandomHorizontalFlip(),
