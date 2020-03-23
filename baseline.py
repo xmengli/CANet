@@ -224,7 +224,6 @@ def main_worker(gpu, args):
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
     size  = 224
-
     tra = transforms.Compose([
                 transforms.Resize(256),
                 transforms.RandomResizedCrop(size),
@@ -254,7 +253,7 @@ def main_worker(gpu, args):
     #     normalize
     # ])
 
-    # print (args.model_dir)
+    # # print (args.model_dir)
     # tra = transforms.Compose([
     #     transforms.Resize(350),
     #     transforms.RandomHorizontalFlip(),
@@ -290,14 +289,17 @@ def main_worker(gpu, args):
                                transform=tra_test, num_class=args.num_class,
                                multitask=args.multitask, args=args)
 
-
+    train_dataset = traindataset(root=args.data, mode='train', transform=tra, num_class=args.num_class,
+                                 multitask=args.multitask, args=args)
 
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
         batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
 
-
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=args.batch_size, shuffle=True,
+            num_workers=args.workers, pin_memory=True,worker_init_fn=worker_init_fn)
 
     if args.evaluate:
         a = time.time()
@@ -308,14 +310,12 @@ def main_worker(gpu, args):
             acc, auc, precision_dr, recall_dr, f1score_dr  = validate(val_loader, model, args)
             result_list = [acc, auc, precision_dr, recall_dr, f1score_dr]
             print ("acc, auc, precision, recall, f1", acc, auc, precision_dr, recall_dr, f1score_dr)
-
             save_result_txt(savedir, result_list)
             print("time", time.time() - a)
             return
         else:
             acc_dr, acc_dme, acc_joint, other_results, se, sp = validate(val_loader, model, args)
             print ("acc_dr, acc_dme, acc_joint", acc_dr, acc_dme, acc_joint)
-            exit(0)
             print ("auc_dr, auc_dme, precision_dr, precision_dme, recall_dr, recall_dme, f1score_dr, f1score_dme",
                    other_results)
             print ("se, sp", se, sp)
@@ -327,14 +327,8 @@ def main_worker(gpu, args):
             print ("time", time.time()-a)
             return
 
-    train_dataset = traindataset(root=args.data, mode='train', transform=tra, num_class=args.num_class,
-                                 multitask=args.multitask, args=args)
-    train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=args.batch_size, shuffle=True,
-            num_workers=args.workers, pin_memory=True,worker_init_fn=worker_init_fn)
 
-
-    writer = SummaryWriter()
+    writer = SummaryWriter("runs/"+args.model_dir.split("/")[-1])
     writer.add_text('Text', str(args))
     #
     from lr_scheduler import LRScheduler
@@ -351,7 +345,7 @@ def main_worker(gpu, args):
         writer.add_scalar('Train loss', loss_train, epoch)
 
         # evaluate on validation set
-        if epoch % 5 == 0:
+        if epoch % 20 == 0:
             if args.dataset == "kaggle":
                 acc_dr, auc_dr = validate(val_loader, model, args)
                 writer.add_scalar("Val acc_dr", acc_dr, epoch)
@@ -365,13 +359,12 @@ def main_worker(gpu, args):
                 is_best = auc >= best_acc1
                 best_acc1 = max(auc, best_acc1)
             else:
-                acc_dr, acc_dme, joint_acc, other_results, se, sp , losses = validate(val_loader, model, args,criterion)
+                acc_dr, acc_dme, joint_acc, other_results, se, sp = validate(val_loader, model, args)
                 writer.add_scalar("Val acc_dr", acc_dr, epoch)
                 writer.add_scalar("Val acc_dme", acc_dme, epoch)
                 writer.add_scalar("Val acc_joint", joint_acc, epoch)
                 writer.add_scalar("Val auc_dr", other_results[0], epoch)
                 writer.add_scalar("Val auc_dme", other_results[1], epoch)
-                writer.add_scalar("val loss", losses, epoch)
                 is_best = joint_acc >= best_acc1
                 best_acc1 = max(joint_acc, best_acc1)
 
@@ -480,10 +473,9 @@ def train(train_loader, model, criterion, lr_scheduler, writer, epoch, optimizer
 from sklearn.metrics import confusion_matrix
 import scipy.misc
 from skimage.transform import resize
-def validate(val_loader, model, args, criterion):
+def validate(val_loader, model, args):
     # switch to evaluate mode
     model.eval()
-    losses = AverageMeter()
 
     all_target = []
     all_target_dme = []
@@ -508,8 +500,8 @@ def validate(val_loader, model, args, criterion):
             if args.multitask:
                 output0 = output[0]
                 output1 = output[1]
-                # output0 = 0.5*output[0]+0.5*output[2]
-                # output1 = 0.5*output[1]+0.5*output[3]
+                # output0 = 0.5*(output[0]+output[2])
+                # output1 = 0.5*(output[1]+output[3])
                 output0 = torch.softmax(output0, dim=1)
                 output1 = torch.softmax(output1, dim=1)
 
@@ -522,15 +514,6 @@ def validate(val_loader, model, args, criterion):
                 all_target.append(target.cpu().data.numpy())
                 all_output.append(output.cpu().data.numpy())
             all_name.append(name)
-
-
-            loss1 = criterion(output[0], target[0])
-            loss2 = criterion(output[1], target[1])
-            loss3 = criterion(output[2], target[0])
-            loss4 = criterion(output[3], target[1])
-            loss = (loss1 + loss2 + args.lambda_value * loss3 + args.lambda_value * loss4)
-
-            losses.update(loss.item(), input.size(0))
 
     if args.dataset == "kaggle":
 
@@ -624,7 +607,7 @@ def validate(val_loader, model, args, criterion):
 
         return acc_dr, acc_dme, joint_acc, \
                [auc_dr, auc_dme, precision_dr, precision_dme, recall_dr, recall_dme, f1score_dr, f1score_dme],\
-               sensitivity1, specificity1, losses.avg
+               sensitivity1, specificity1
 
 def softmax(x):
     """Compute softmax values for each sets of scores in x."""

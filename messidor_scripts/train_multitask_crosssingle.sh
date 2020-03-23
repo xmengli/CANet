@@ -1,2 +1,0 @@
-cd ..
-CUDA_VISIBLE_DEVICES='6' python baseline.py /home/xmli/gpu16_xmli/MESSIDOR/ missidor MESSIDOR/multi_resnet50_simple_2class_CBAM_drop03repeat2_55_crosscbamchannel_focalloss -a densenet161 --gpu 0 -b 40 --lr 0.001 --pretrained --epochs 300  --decay_epoch 100 --num_class 2  --multitask  --crossCBAM  --evaluate --resume exp/MESSIDOR/multi_resnet50_simple_2class_CBAM_drop03repeat2_55_crosscbamchannel2/model_converge.pth.tar

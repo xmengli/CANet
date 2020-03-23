@@ -135,19 +135,9 @@ class ResNet(nn.Module):
 
 
         if not self.crossCBAM:
-            # self.layer5 = nn.Conv2d(2048, 300, kernel_size=3, padding=1, bias=False)
-            # self.bn5 = norm_layer(300)
-            self.layer5 = nn.Conv2d(2048, 660, kernel_size=1, padding=1, bias=False)
-            self.bn5 = norm_layer(660)
+            self.layer5 = nn.Conv2d(2048, 300, kernel_size=3, padding=1, bias=False)
+            self.bn5 = norm_layer(300)
             self.relu5= nn.ReLU(inplace=True)
-
-            self.layer6 = nn.Conv2d(660, 512, kernel_size=3, padding=1, bias=False)
-            self.bn6 = norm_layer(512)
-            self.relu6 = nn.ReLU(inplace=True)
-
-            self.layer7 = nn.Conv2d(512, 256, kernel_size=3, padding=1, bias=False)
-            self.bn7 = norm_layer(256)
-            self.relu7 = nn.ReLU(inplace=True)
 
 
         if self.liu:
@@ -201,8 +191,8 @@ class ResNet(nn.Module):
         elif self.multitask:
             # self.classifier1 = nn.Linear(512 * block.expansion, self.num_classes)
             # self.classifier2 = nn.Linear(512 * block.expansion, 3)
-            self.classifier1 = nn.Linear(256, self.num_classes)
-            self.classifier2 = nn.Linear(256, 3)
+            self.classifier1 = nn.Linear(300, self.num_classes)
+            self.classifier2 = nn.Linear(300, 3)
         elif self.num_classes == 2:
             self.classifier1 = nn.Linear(512 * block.expansion, self.num_classes)
         elif self.num_classes == 3:
@@ -292,9 +282,6 @@ class ResNet(nn.Module):
 
         if not self.crossCBAM:
             x = self.relu5(self.bn5(self.layer5(x)))
-            x = self.relu6(self.bn6(self.layer6(x)))
-
-            x = self.relu7(self.bn7(self.layer7(x)))
 
 
         if self.crossCBAM:
@@ -349,7 +336,6 @@ class ResNet(nn.Module):
             #     scipy.misc.imsave('visual_result/messidor_05/DME_spatial_attention' + str(i) + '.jpg', ori_img)
             #
             # exit(0)
-
             x1 = self.avgpool(self.branch_bam1(x))
             x2 = self.avgpool(self.branch_bam2(x))
 
@@ -357,8 +343,7 @@ class ResNet(nn.Module):
             x1 = x1.view(x1.size(0), -1)
             x2 = x2.view(x2.size(0), -1)
             x1 = self.classifier_dep1(x1)
-            x2 = self.classifier_dep1(x2)
-
+            x2 = self.classifier_dep2(x2)
 
             out1 = self.classifier_specific_1(x1)
             out2 = self.classifier_specific_2(x2)
@@ -473,7 +458,6 @@ class ResNet(nn.Module):
             out2 = self.classifier2(out2)
             return out1, out2
         elif self.multitask:
-
             out1 = self.classifier1(out)
             out2 = self.classifier2(out)
             return out1, out2

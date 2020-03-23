@@ -1,2 +1,0 @@
-cd ..
-CUDA_VISIBLE_DEVICES='1' python baseline.py /home/xmli/gpu16_xmli/MESSIDOR/ missidor MESSIDOR/Liu_resnet_dropout_2times  -a densenet161 --gpu 0 -b 40 --lr 0.001 --pretrained --epochs 300  --decay_epoch 100 --num_class 2 --multitask  --liu  --evaluate --resume exp/MESSIDOR/Liu_resnet_dropout_2times/checkpoint200.pth.tar

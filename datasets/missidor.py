@@ -35,6 +35,7 @@ class traindataset(data.Dataset):
         xls_files = glob.glob(self.root + '/*/*.xls')
         dictLabels_DR, dictLabels_DME = self.load_csv(xls_files)
 
+
         files = np.loadtxt(self.root + "file_list.txt", dtype=str)
         idx = np.loadtxt(self.root + "/10fold/"+str(args.fold_name)+".txt", dtype=int)
         print ("foldname", args.fold_name)
@@ -57,6 +58,9 @@ class traindataset(data.Dataset):
         # idx = idx[:120]
         self.test_root = [files[idx_item] for idx_item in idx]
         self.train_root = list(set(files) - set(self.test_root))
+        self.train_root = [self.root + item for item in self.train_root]
+        self.test_root  = [self.root + item for item in self.test_root]
+
 
         # self.train_root = np.genfromtxt("train_root.txt", dtype=str)
         # self.test_root = np.genfromtxt("test_root.txt", dtype=str)
@@ -105,7 +109,6 @@ class traindataset(data.Dataset):
                     label_DR = [k for k, v in dictLabels_DR.items() if item.split("/")[-1] in v]
                     label_DME = [k for k, v in dictLabels_DME.items() if item.split("/")[-1] in v]
                     self.test_label.append([int(label_DR[0]), int(label_DME[0])])
-
                 else:
                     if self.num_class == 2:
                         label_DR = [k for k, v in dictLabels_DR.items() if item.split("/")[-1] in v]

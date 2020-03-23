@@ -1,2 +1,0 @@
-cd ..
-CUDA_VISIBLE_DEVICES='0' python baseline.py /home/xmli/medical/MESSIDOR/ missidor exp/MESSIDOR/multi_CAN_dmedr_10fold10 --fold_name fold10  -a resnet50 --gpu 0 -b 40 --lr 0.1 --pretrained --epochs 1000  --decay_epoch 500 --num_class 2  --multitask --crossCBAM

@@ -24,6 +24,7 @@ filelist=[
 filelist = [args.filename + item for item in filelist]
 
 filelist = ["exp/MESSIDOR/" + item for item in filelist]
+
 whole_metric = np.zeros((10,13), dtype=float)
 
 for i in range(len(filelist)):
