@@ -30,7 +30,7 @@ cd CANet
 * Run `sh train_fold.sh` to start the training process
 
 ## Evaluate
-* Specify the model path and test file path in `eval_fold.py`
+* Specify the model path and test file path in `eval_fold.sh`
 * Run `sh eval_fold.sh` to start the evaluation.
 
 
