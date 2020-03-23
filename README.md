@@ -21,17 +21,17 @@ cd CANet
 ```
 
 ## Data Preparation
-* Download [Messidor dataset](http://www.adcis.net/en/third-party/messidor/) <br/>. 
-* Put the data under `./data/`. 
+* Download [Messidor dataset](http://www.adcis.net/en/third-party/messidor/) <br/>
+* Put the data under `./data/`
 
 
 ## Train
-* Modify paramter values in `./config_param.json`
-* Run `./main.py` to start the training process
+* cd `messidor_scripts`
+* Run `sh train_fold.sh` to start the training process
 
 ## Evaluate
-* Specify the model path and test file path in `./evaluate.py`
-* Run `./evaluate.py` to start the evaluation.
+* Specify the model path and test file path in `eval_fold.py`
+* Run `sh eval_fold.sh` to start the evaluation.
 
 
 ## Citation
