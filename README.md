@@ -26,6 +26,7 @@ cd CANet
 
 
 ## Train
+* Download [ImageNet pretrain model](https://download.pytorch.org/models/resnet50-19c8e357.pth) and put it under `./pretrain`
 * cd `messidor_scripts`
 * Run `sh train_fold.sh` to start the training process
 
