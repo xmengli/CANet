@@ -22,7 +22,7 @@ cd CANet
 
 ## Data Preparation
 * Download [Messidor dataset](http://www.adcis.net/en/third-party/messidor/) <br/>. 
-* 
+* Put the data under `./data/`. 
 
 
 ## Train
