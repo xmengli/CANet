@@ -13,11 +13,11 @@ IEEE Transactions on Medical Imaging
 </p>
 
 ## Installation
-* Install TensorFlow 1.10 and CUDA 9.0
+* Install Pytorch 1.1.0 and CUDA 9.0
 * Clone this repo
 ```
-git clone https://github.com/cchen-cc/SIFA
-cd SIFA
+git clone https://github.com/xmengli999/CANet
+cd CANet
 ```
 
 ## Data Preparation
