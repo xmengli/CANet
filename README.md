@@ -5,7 +5,7 @@ Pytorch implementation of CANet: Cross-disease attention network. <br/>
 ## Paper
 [CANet: Cross-disease Attention Network for Joint Diabetic Retinopathy and Diabetic Macular Edema Grading](https://arxiv.org/abs/1911.01376)
 <br/>
-IEEE Transactions on Medical Imaging
+IEEE Transactions on Medical Imaging, 2019
 <br/>
 <br/>
 <p align="center">
