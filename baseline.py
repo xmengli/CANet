@@ -111,10 +111,6 @@ def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 def main():
     args = parser.parse_args()
-    print (args.model_dir, args.epochs)
-
-    # cudnn.deterministic = False
-    # cudnn.benchmark = True
 
     main_worker(args.gpu, args)
 
@@ -136,32 +132,11 @@ def main_worker(gpu, args):
     if args.gpu is not None:
         print("Use GPU: {} for training".format(args.gpu))
 
-    if args.arch == "vgg11":
-        from models.vgg import vgg11
-        model = vgg11(num_classes=args.num_class, crossCBAM=args.crossCBAM)
-    elif args.arch == "resnet50":
+    if args.arch == "resnet50":
         from models.resnet50 import resnet50
         model = resnet50(num_classes=args.num_class, multitask=args.multitask, liu=args.liu,
                  chen=args.chen, CAN_TS=args.CAN_TS, crossCBAM=args.crossCBAM,
                          crosspatialCBAM = args.crosspatialCBAM,  choice=args.choice)
-    elif args.arch == "resnet34":
-        from models.resnet50 import resnet34
-        model = resnet34(num_classes=args.num_class, multitask=args.multitask, liu=args.liu,
-                 chen=args.chen,CAN_TS=args.CAN_TS, crossCBAM=args.crossCBAM,
-                         crosspatialCBAM = args.crosspatialCBAM)
-    elif args.arch == "resnet18":
-        from models.resnet50 import resnet18
-        model = resnet18(num_classes=args.num_class, multitask=args.multitask, liu=args.liu,
-                 chen=args.chen, flagCBAM=False, crossCBAM=args.crossCBAM)
-    elif args.arch == "densenet161":
-        from models.densenet import densenet161
-        model = densenet161(num_classes=args.num_class, multitask=args.multitask, cosface=False, liu=args.liu,
-                    chen=args.chen, crossCBAM=args.crossCBAM)
-    elif args.arch == "wired":
-        from models.wirednetwork import CNN
-        model = CNN(args, num_classes=args.num_class)
-    else:
-        print ("no backbone model")
 
     if args.pretrained:
         print ("==> Load pretrained model")
@@ -181,8 +156,6 @@ def main_worker(gpu, args):
 
     torch.cuda.set_device(args.gpu)
     model = model.cuda(args.gpu)
-
-
 
     print('    Total params: %.2fM' % (sum(p.numel() for p in model.parameters()) / 1000000.0))
 
@@ -338,8 +311,6 @@ def main_worker(gpu, args):
         is_best = False
         is_best_auc = False
         is_best_acc = False
-        # lr = adjust_learning_rate(optimizer, epoch, args)
-        # writer.add_scalar("lr", lr, epoch)
         # train for one epoch
         loss_train = train(train_loader, model, criterion, lr_scheduler, writer, epoch, optimizer, args)
         writer.add_scalar('Train loss', loss_train, epoch)
@@ -374,35 +345,6 @@ def main_worker(gpu, args):
                 is_best_acc = acc_dr >= best_accdr
                 best_accdr = max(acc_dr, best_accdr)
 
-        if not args.invalid:
-            if is_best:
-                save_checkpoint({
-                'epoch': epoch + 1,
-                'arch': args.arch,
-                'state_dict': model.state_dict(),
-                'best_acc1': best_acc1,
-                'optimizer' : optimizer.state_dict(),
-                }, is_best, filename = "model_converge.pth.tar", save_dir=args.model_dir)
-
-            if is_best_auc:
-                save_checkpoint({
-                'epoch': epoch + 1,
-                'arch': args.arch,
-                'state_dict': model.state_dict(),
-                'best_acc1': best_auc,
-                'optimizer' : optimizer.state_dict(),
-                }, False, filename = "converge_auc.pth.tar", save_dir=args.model_dir)
-
-            if is_best_acc:
-                save_checkpoint({
-                    'epoch': epoch + 1,
-                    'arch': args.arch,
-                    'state_dict': model.state_dict(),
-                    'best_acc1': best_accdr,
-                    'optimizer': optimizer.state_dict(),
-                }, False, filename="converge_acc.pth.tar", save_dir=args.model_dir)
-
-
 
 def train(train_loader, model, criterion, lr_scheduler, writer, epoch, optimizer,  args):
     batch_time = AverageMeter()
@@ -434,26 +376,12 @@ def train(train_loader, model, criterion, lr_scheduler, writer, epoch, optimizer
         if args.multitask:
             loss1 = criterion(output[0], target[0])
             loss2 = criterion(output[1], target[1])
-            # if epoch < 100:
-            #     loss = (loss1*0.5  + loss2*0.5)
-            # else:
-            #     total = []
-            #     total.append(loss1)
-            #     total.append(loss2)
-            #     c = [-torch.mul(torch.mul(torch.mul(torch.mul(item, item), item),item),item) * \
-            #          torch.log(torch.max(torch.FloatTensor([0.01]).cuda(),1 - item)) for item in total]
-            #     loss = (c[0]+c[1]) /2
-            # loss = (loss1 * 0.5 + loss2 * 0.5)
-            # loss = (loss1 + loss2 + loss3 + loss4)
             if args.crossCBAM:
                 loss3 = criterion(output[2], target[0])
                 loss4 = criterion(output[3], target[1])
                 loss = (loss1 + loss2 + args.lambda_value *loss3 + args.lambda_value * loss4)
             else:
                 loss = (loss1 + loss2)
-            # loss = (loss1 + loss2 + 0.75*loss3 + 0.75*loss4)
-            # loss = (loss1 + loss2 + 0.5* loss3 + 0.5*loss4)
-            # loss = (loss1 + loss2 + loss3 + loss4)
         else:
             loss = criterion(output, target)
 
@@ -492,16 +420,11 @@ def validate(val_loader, model, args):
             else:
                 target = target.cuda(args.gpu, non_blocking=True)
 
-            # compute output
-            # print ("test name", name)
-            # print ("target", target)
             output = model(input)
             torch.cuda.synchronize()
             if args.multitask:
                 output0 = output[0]
                 output1 = output[1]
-                # output0 = 0.5*(output[0]+output[2])
-                # output1 = 0.5*(output[1]+output[3])
                 output0 = torch.softmax(output0, dim=1)
                 output1 = torch.softmax(output1, dim=1)
 
@@ -556,19 +479,6 @@ def validate(val_loader, model, args):
         joint_target = np.vstack((all_target, all_target_dme))
         joint_acc = ((np.equal(joint_result, joint_target) == True).sum(axis=0) == 2).sum() / joint_result.shape[1]
 
-        # print ("joint", joint_result, joint_target)
-        # mask = ((np.equal(joint_result, joint_target) == True).sum(axis=0) == 2)
-        # print (mask)
-        # index = [i for i, x in enumerate(mask) if x]
-        # print (index)
-        # print (len(index))
-        # c = [all_output[i] for i in index]
-        # d = [all_output_dme[i] for i in index]
-        # print (namelist)
-        # print ("DR", all_output)
-        # print ("DME", all_output_dme)
-        # exit(0)
-
         # auc
         if args.dataset == "missidor":
             auc_dr  = roc_auc_score(all_target, [item[1] for item in all_output])
@@ -598,12 +508,9 @@ def validate(val_loader, model, args):
         f1score_dme = f1_score(all_target_dme, np.argmax(all_output_dme, axis=1), average="macro")
 
         cm1 = confusion_matrix(all_target, np.argmax(all_output, axis=1))
-        # print('Confusion Matrix : \n', cm1)
         sensitivity1 = cm1[0, 0] / (cm1[0, 0] + cm1[0, 1])
-        # print('Sensitivity : ', sensitivity1)
-
         specificity1 = cm1[1, 1] / (cm1[1, 0] + cm1[1, 1])
-        # print('Specificity : ', specificity1)
+
 
         return acc_dr, acc_dme, joint_acc, \
                [auc_dr, auc_dme, precision_dr, precision_dme, recall_dr, recall_dme, f1score_dr, f1score_dme],\
@@ -620,8 +527,6 @@ def save_checkpoint(state, is_best, filename='checkpoint.pth.tar', save_dir= 'fi
     if not os.path.exists(root):
         os.makedirs(root)
     torch.save(state, root+filename)
-    # if is_best:
-    #     shutil.copyfile(root+filename, root+'model_converge.pth.tar')
 
 
 def save_result2txt(savedir, all_output_dme, all_output,all_target_dme,all_target):
