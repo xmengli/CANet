@@ -9,7 +9,7 @@ IEEE Transactions on Medical Imaging
 <br/>
 <br/>
 <p align="center">
-  <img src="figure/framework.pdf">
+  <img src="figure/framework.png">
 </p>
 
 ## Installation
