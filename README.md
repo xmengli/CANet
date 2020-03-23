@@ -26,8 +26,9 @@ cd CANet
 
 
 ## Train
-* Download [ImageNet pretrain model](https://download.pytorch.org/models/resnet50-19c8e357.pth) and put it under `./pretrain`
-* cd `messidor_scripts`
+* Download [ImageNet pretrain model](https://download.pytorch.org/models/resnet50-19c8e357.pth) and put it under `./pretrain/`
+or Download the [kaggle DR pretrain model](https://drive.google.com/file/d/1RPnX9G38qQfBI84_nuNWmYpJG5Q2XNvG/view) and put it under `./pretrain/`
+* cd `messidor_scripts` and specify the pretrain model in `train_fold.sh`
 * Run `sh train_fold.sh` to start the training process
 
 ## Evaluate
