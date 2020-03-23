@@ -21,9 +21,9 @@ cd CANet
 ```
 
 ## Data Preparation
-* Raw data needs to be written into `tfrecord` format to be decoded by `./data_loader.py`. The pre-processed data has been released from [PnP-AdaNet](https://github.com/carrenD/Medical-Cross-Modality-Domain-Adaptation). The training data can be downloaded [here](https://drive.google.com/file/d/1m9NSHirHx30S8jvN0kB-vkd7LL0oWCq3/view). The testing CT data can be downloaded [here](https://drive.google.com/file/d/1SJM3RluT0wbR9ud_kZtZvCY0dR9tGq5V/view). The testing MR data can be downloaded [here](https://drive.google.com/file/d/1RNb-4iYWUaFBY61rFAnT2XT0mtwlnH1V/view).
-* Put `tfrecord` data of two domains into corresponding folders under `./data` accordingly.
-* Run `./create_datalist.py` to generate the datalists containing the path of each data.
+* Messidor dataset: http://www.adcis.net/en/third-party/messidor/
+* 
+
 
 ## Train
 * Modify paramter values in `./config_param.json`
@@ -33,30 +33,21 @@ cd CANet
 * Specify the model path and test file path in `./evaluate.py`
 * Run `./evaluate.py` to start the evaluation.
 
+
 ## Citation
 If you find the code useful for your research, please cite our paper.
 ```
-@article{chen2020unsupervised,
-  title     = {Unsupervised Bidirectional Cross-Modality Adaptation via 
-               Deeply Synergistic Image and Feature Alignment for Medical Image Segmentation},
-  author    = {Chen, Cheng and Dou, Qi and Chen, Hao and Qin, Jing and Heng, Pheng Ann},
-  journal   = {arXiv preprint arXiv:2002.02255},
-  year      = {2020}
-}
-
-@inproceedings{chen2019synergistic,
-  author    = {Chen, Cheng and Dou, Qi and Chen, Hao and Qin, Jing and Heng, Pheng-Ann},
-  title     = {Synergistic Image and Feature Adaptation: 
-               Towards Cross-Modality Domain Adaptation for Medical Image Segmentation},
-  booktitle = {Proceedings of The Thirty-Third Conference on Artificial Intelligence (AAAI)},
-  pages     = {865--872},
-  year      = {2019},
+@article{li2019canet,
+  title={CANet: Cross-disease Attention Network for Joint Diabetic Retinopathy and Diabetic Macular Edema Grading},
+  author={Li, Xiaomeng and Hu, Xiaowei and Yu, Lequan and Zhu, Lei and Fu, Chi-Wing and Heng, Pheng-Ann},
+  journal={IEEE transactions on medical imaging},
+  year={2019},
+  publisher={IEEE}
 }
 ```
 
 ## Acknowledgement
-Part of the code is revised from the [Tensorflow implementation of CycleGAN](https://github.com/leehomyc/cyclegan-1).
+CBAM module is reused from the [Pytorch implementation of CBAM](https://github.com/Jongchan/attention-module).
 
 ## Note
-* The repository is being updated
-* Contact: Cheng Chen (chencheng236@gmail.com)
+* Contact: Xiaomeng Li (xmengli999@gmail.com)
