@@ -40,9 +40,12 @@ or Download the [kaggle DR pretrain model](https://drive.google.com/file/d/1RPnX
 If you find the code useful for your research, please cite our paper.
 ```
 @article{li2019canet,
-  title={CANet: Cross-disease Attention Network for Joint Diabetic Retinopathy and Diabetic Macular Edema Grading},
+  title={CANet: Cross-Disease Attention Network for Joint Diabetic Retinopathy and Diabetic Macular Edema Grading},
   author={Li, Xiaomeng and Hu, Xiaowei and Yu, Lequan and Zhu, Lei and Fu, Chi-Wing and Heng, Pheng-Ann},
   journal={IEEE transactions on medical imaging},
+  volume={39},
+  number={5},
+  pages={1483--1493},
   year={2019},
   publisher={IEEE}
 }
